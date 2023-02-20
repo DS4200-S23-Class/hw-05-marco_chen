@@ -3,11 +3,90 @@
 
 <head>
     <meta charset=utf-8/>
+
+    <!-- link stylesheet -->
+    <link rel='stylesheet' href='style.css'>
+
+    <!-- include d3 library-->
+    <script src='js/d3.v6.1.1/d3.min.js'></script>
+
+    <title> hw-05 </title>
+
 </head>
 
 
 <body>
 
+    <h2 id='centered_header'> hw-05 Interative Graph with D3 </h2>
+
+    <div class="flex-box">
+
+        <!-- left column -->
+        <div class="column" id='left_col'> 
+
+            <div id='scatter_plot'></div>
+
+            <br>
+
+            <div id='bar_chart'></div>
+
+
+        </div>
+
+        <!-- right column -->
+        <div class="column" id='right_col'> 
+
+            <form>
+
+            <p1 id='last_point'> Last Point Clicked: </p1>
+
+            <br>
+            <br>
+
+            <!-- user input x coordinate-->
+            <p1>Select the x-coordinate you want to add.</p1>
+            <select id="input_x">
+              <option> 1 </option>
+              <option> 2 </option>
+              <option> 3 </option>
+              <option> 4 </option>
+              <option> 5 </option>
+              <option> 6 </option>
+              <option> 7 </option>
+              <option> 8 </option>
+              <option> 9 </option>
+            </select>
+
+            <br>
+            <br>
+ 
+            <!-- user input y coordinate-->
+            <p1>Select the y-coordinate you want to add.</p1>
+            <select id="input_y">
+              <option> 1 </option>
+              <option> 2 </option>
+              <option> 3 </option>
+              <option> 4 </option>
+              <option> 5 </option>
+              <option> 6 </option>
+              <option> 7 </option>
+              <option> 8 </option>
+              <option> 9 </option>
+            </select>
+
+            <br>
+            <br>
+            <!-- button for submitting user input -->
+            <button type='button' id='button'>Add chosen point!</button>
+
+        </form>
+
+        </div>
+
+
+
+    <!-- include js -->
+    <script src='js/main.js'> </script>
 
 </body>
 

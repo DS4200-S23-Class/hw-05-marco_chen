@@ -1,0 +1,49 @@
+body {
+	font: Arial;
+}
+
+#centered_header {
+	text-align: center;
+}
+
+.flex-box {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+}
+
+/* left column takes 60% of the page*/
+#left_col {
+	width: 60%;
+	flex-wrap: flex;
+	flex-direction: column;
+}
+
+/* right column takes 40% of the page*/
+#right_col {
+ 	width: 40%;
+	flex-wrap: flex;
+	flex-direction: column;
+  }
+
+
+/* style of points*/
+.point {
+	fill: rgb(100, 200, 50);
+}
+
+/* add color to hover*/
+.point:hover{
+	fill: rgb(100, 0, 50);
+}
+
+.bar {
+	fill: blue;
+}
+
+.tooltip {
+	position: absolute;
+	background-color: grey;
+	border: solid;
+	padding: 5px;
+}
