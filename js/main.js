@@ -16,121 +16,134 @@ d3.select("#scatter_plot")
 		.attr("width", FRAME_WIDTH)
 		.attr("class", "frame");
 
-d3.csv('data/scatter-data.csv').then((data) => {
 
+// function that plot the default points
+// also include function that allows user add point
+function build_scatter() {
+	d3.csv('data/scatter-data.csv').then((data) => {
 
-	const MAX_X = 1 + d3.max(data, (d) => {
-							return parseInt(d.x)
-						});
-	const MAX_Y = 1 + d3.max(data, (d) => {
-							return parseInt(d.y)
-						});
+		// scale input x and y
+		const MAX_X = 1 + d3.max(data, (d) => {
+								return parseInt(d.x)
+							});
+		const MAX_Y = 1 + d3.max(data, (d) => {
+								return parseInt(d.y)
+							});
 
-	const X_SCALE = d3.scaleLinear()
-						.domain([0, (MAX_X)])
-						.range([0, VIS_WIDTH]);
+		const X_SCALE = d3.scaleLinear()
+							.domain([0, (MAX_X)])
+							.range([0, VIS_WIDTH]);
 
-	const Y_SCALE = d3.scaleLinear()
-						.domain([0, (MAX_Y)])
-						.range([VIS_HEIGHT, 0]);
+		const Y_SCALE = d3.scaleLinear()
+							.domain([0, (MAX_Y)])
+							.range([VIS_HEIGHT, 0]);
 
-
-	FRAME1.selectAll('points')
-			.data(data)
-			.enter()
-			.append('circle')
-				.attr('cx', (d) => {
-					return X_SCALE(parseInt(d.x)) + MARGINS.left
-				})
-				.attr('cy', (d) => {
-					return MARGINS.top + Y_SCALE(parseInt(d.y))
-				})
-				.attr('r', 10)
-				.attr('class', 'point')
-				.attr('id', (d) => {return'(' + d.x.toString() + ',' + d.y.toString() + ')'
-			});
-
-
-	// function that adds points to the plot (user)
-	function add_point() {
-
-		// all console.log are used for debugging
-		let x = parseInt(document.getElementById("input_x").value);
-		let y = parseInt(document.getElementById("input_y").value);
-		
-		let id = '(' + x.toString() + ',' + y.toString() + ')';
-
-		FRAME1.append('circle')
-				.attr('cx', (d) => {
-						return X_SCALE(parseInt(x)) + MARGINS.left
+		// plot default points
+		FRAME1.selectAll('points')
+				.data(data)
+				.enter()
+				.append('circle')
+					.attr('cx', (d) => {
+						return X_SCALE(parseInt(d.x)) + MARGINS.left
 					})
-				.attr('cy', (d) => {
-						return MARGINS.top + Y_SCALE(parseInt(y))
+					.attr('cy', (d) => {
+						return MARGINS.top + Y_SCALE(parseInt(d.y))
 					})
-				.attr('r', 10)
-				.attr('class', 'point')
-				.attr('id', id);
+					.attr('r', 10)
+					.attr('class', 'point')
+					.attr('id', (d) => {return'(' + d.x.toString() + ',' + d.y.toString() + ')'
+				});
 
-		let points = FRAME1.selectAll(".point");
+
+		// function that adds points to the plot (user)
+		function add_point() {
+
+			// all console.log are used for debugging
+			let x = parseInt(document.getElementById("input_x").value);
+			let y = parseInt(document.getElementById("input_y").value);
+			
+			let id = '(' + x.toString() + ',' + y.toString() + ')';
+
+			FRAME1.append('circle')
+					.attr('cx', (d) => {
+							return X_SCALE(parseInt(x)) + MARGINS.left
+						})
+					.attr('cy', (d) => {
+							return MARGINS.top + Y_SCALE(parseInt(y))
+						})
+					.attr('r', 10)
+					.attr('class', 'point')
+					.attr('id', id);
+
+			let points = FRAME1.selectAll(".point");
+			points.on("click", click_point);
+
+		};
+
+		// allow user to add point by clicking the button
+		d3.selectAll("#button")
+			.on("click", add_point);
+
+
+		// function that adds/deletes border as user click the point
+		// also update the last clicked point in the right column
+		function update_border(id) {
+
+			const raw_text = 'Last Point Clicked: ';
+			let point = document.getElementById(id);
+			let text = document.getElementById("last_point");
+
+			console.log(id);
+
+
+			// update border
+			if (point.border == undefined || point.border == false) {
+
+				console.log('adding')
+				point.setAttribute('stroke-width', '4px')
+				point.setAttribute('stroke', 'blue')
+				point.border = true;
+			}
+
+			else {
+
+				console.log('deleting')
+				point.removeAttribute('stroke-width')
+				point.removeAttribute('stroke')
+				point.border = false;
+			}
+
+			// update last clicked point
+			text.innerHTML = raw_text.concat(id);
+		};
+
+		// allow user to add border or delete border
+		function click_point() {
+			console.log(this)
+			update_border(this.id)
+		};
+
+		points = FRAME1.selectAll(".point");
 		points.on("click", click_point);
 
-	};
 
-	d3.selectAll("#button")
-		.on("click", add_point);
-
-
-	// function that adds/deletes border as user click the point
-	// also update the last clicked point in the right column
-	function update_border(id) {
-
-		const raw_text = 'Last Point Clicked: ';
-		let point = document.getElementById(id);
-		let text = document.getElementById("last_point");
-
-		console.log(id);
+		// add x-axis and y-axis to the scatter plot
+		FRAME1.append("g")
+				.attr("transform", "translate(" + MARGINS.top + "," + (VIS_HEIGHT + MARGINS.top) + ")")
+				.call(d3.axisBottom(X_SCALE));
 
 
-		// update border
-		if (point.border == undefined || point.border == false) {
+		FRAME1.append("g")
+				.attr("transform", "translate(" + MARGINS.left + "," + MARGINS.top + ")")
+				.call(d3.axisLeft(Y_SCALE));
 
-			console.log('adding')
-			point.setAttribute('stroke-width', '4px')
-			point.setAttribute('stroke', 'blue')
-			point.border = true;
-		}
+	});
+};
 
-		else {
-
-			console.log('deleting')
-			point.removeAttribute('stroke-width')
-			point.removeAttribute('stroke')
-			point.border = false;
-		}
-
-		// update last clicked point
-		text.innerHTML = raw_text.concat(id);
-	};
-
-	function click_point() {
-		console.log(this)
-		update_border(this.id)
-	};
-
-	points = FRAME1.selectAll(".point");
-	points.on("click", click_point);
-
-	FRAME1.append("g")
-			.attr("transform", "translate(" + MARGINS.top + "," + (VIS_HEIGHT + MARGINS.top) + ")")
-			.call(d3.axisBottom(X_SCALE));
+build_scatter()
 
 
-	FRAME1.append("g")
-			.attr("transform", "translate(" + MARGINS.left + "," + MARGINS.top + ")")
-			.call(d3.axisLeft(Y_SCALE));
-
-});
-
+// add frame for bar chart
 const FRAME2 = 
 d3.select("#bar_chart")
 	.append("svg")
@@ -139,19 +152,19 @@ d3.select("#bar_chart")
 		.attr("class", "bar_frame");
 
 
-
-function build_plot() {
-
-
-	const xScale = d3.scaleBand().range ([0, VIS_WIDTH]).padding(0.2);
-	const yScale = d3.scaleLinear().range ([VIS_HEIGHT, 0]);
+// function that build bar chart
+function build_bar() {
 
 	d3.csv('data/bar-data.csv').then((data) => {
 
-		
+		// scale input variables
+		const xScale = d3.scaleBand().range ([0, VIS_WIDTH]).padding(0.2);
+		const yScale = d3.scaleLinear().range ([VIS_HEIGHT, 0]);
+
         xScale.domain(data.map(function(d) { return d.category; }));
         yScale.domain([0, d3.max(data, function(d) { return d.amount; })]);
 
+        // add bar to bar chart
 		FRAME2.selectAll('bar_frame')
 				.data(data)
 				.enter()
@@ -162,7 +175,7 @@ function build_plot() {
 					.attr('height', function(d) { return VIS_HEIGHT - yScale(d.amount); })
 					.attr('class', 'bar');
 
-
+		// add x-axis and y-axis
 		FRAME2.append("g")
          .attr("transform", 'translate(' + MARGINS.left +
 			 ',' + (VIS_HEIGHT + MARGINS.top) + ')')
@@ -215,4 +228,4 @@ function build_plot() {
 };
 
 
-build_plot();
+build_bar();
